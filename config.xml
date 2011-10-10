@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets">
+	<name>Word counter for Opera</name>
+	<description>Counts words in selected text</description>
+  	<author email="k.pluszczewicz@gmail.com">Kamil Pluszczewicz</author>
+  	<icon src="letter.png"/>
+
+	<preference name="indicationForm" value="tooltip" />
+	<preference name="showIcon" value="true" />
+	<preference name="countType" value="words" />
+</widget>

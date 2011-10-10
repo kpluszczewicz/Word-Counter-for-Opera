@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Word counter</title>
+    <script type="text/javascript">
+	window.addEventListener("load", function() {
+	    var wSpan = document.getElementById("words-count");
+	    var lSpan = document.getElementById("letters-count");
+
+	    wSpan.innerHTML = opera.extension.bgProcess.words;
+	    lSpan.innerHTML = opera.extension.bgProcess.letters;
+	}, false);
+    </script>
+    <style type="text/css">
+	#words-count, #letters-count 
+	{ font-weight: bold; }
+    </style>
+  </head>
+  <body>
+      Words: <span id="words-count">0</span>
+      Letters:<span id="letters-count">0</span>
+  </body>
+</html>

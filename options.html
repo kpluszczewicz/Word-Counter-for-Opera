@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="options.css">
+  <title id="widget-title">Opera Extensions | Word Counter for Opera</title>
+</head>
+<body>
+  <header>
+    <img src="letter.png">
+    <h1 id="widget-name">Word Counter v1.11</h1>
+    <h2>Made by <span id="widget-author">Kamil Pluszczewicz</span></h2>
+  </header>
+
+  <section>
+    <p>Word Counter is a simple extension that (suprise!) counts words and
+    letters in selected text. Results can be displayed in three ways: on
+    toolbar, in a tooltip (it can appear next to selection or in upper right
+    corner), or in a popup window (when user clicks extension's icon).</p>
+
+    <h3>Word Counter Options:</h3>
+    <fieldset>
+	<h4>Toolbar icon</h4>
+	<p>
+	    <input name="showIcon" id="showIcon" value="true" type="checkbox" />
+	    <label for="showIcon">Show icon on toolbar</label>
+	</p>
+
+	<h4>Number displayed on toolbar (if previous option is enabled)</h4>
+	<p>
+	    <input name="countType" id="radio1" value="words" type="radio"></input>
+	    <label for="radio1">Word count</label> <br /> 
+
+	    <input name="countType" id="radio2" value="letters" type="radio"></input>
+	    <label for="radio2">Letter count</label> <br /> 
+	</p>
+	<h4>Tooltip form</h4>
+	<p>
+	    <input name="indicationForm" id="tooltipHint" value="tooltip" type="radio" />
+	    <label for="tooltipHint">Next to selection</label> <br />
+
+	    <input name="indicationForm" id="barHint" value="bar" type="radio"/>
+	    <label for="barHint">In upper right corner</label> <br />
+
+	    <input name="indicationForm" id="noneHint" value="none" type="radio" />
+	    <label for="noneHint">Don't show tooltip</label> <br />
+	</p>
+    </fieldset>
+
+  <p>Word counter is my Hello World to Opera extensions. Hope someone will use
+      this someday. Good day to You.</p>
+  </section>
+
+  <footer>
+    <p>Powered by the Opera Browser</p>
+  </footer>
+
+<script>
+
+
+addEventListener('DOMContentLoaded', function() {
+    var tooltipInput = document.getElementById("tooltipHint");
+    var barInput = document.getElementById("barHint");
+    var noneHint = document.getElementById("noneHine");
+	var noneHint = document.getElementById("noneHint");
+    tooltipInput.addEventListener("change", function(e) {
+	if (tooltipInput.checked) {
+	    opera.extension.bgProcess.callTooltipStyle();
+	}
+    }, false);
+
+    barInput.addEventListener("change", function(e) {
+	if (barInput.checked) {
+	    opera.extension.bgProcess.callBarStyle();
+	}
+    }, false);
+
+
+    var showIconInput = document.getElementById("showIcon");
+    showIconInput.addEventListener("change", function(e) {
+	// Show icon
+	if (showIconInput.checked) {
+	    opera.extension.bgProcess.addIcon();
+	    widget.preferences.showIcon = 'true';
+	} else {
+	    opera.extension.bgProcess.removeIcon();
+	    widget.preferences.showIcon = undefined;
+	}
+    }, false);
+
+    // storage
+    var storage = widget.preferences;
+
+    // glue for multiple values ( checkbox, select-multiple )
+    var glue    = '\n';
+
+    // get the FORM elements
+    var formElements = document.querySelectorAll( 'input,select' );
+
+    // list of FORM elements
+    var skip            = hash( 'hidden,submit,image,reset,button' );
+    var multipleValues  = hash( 'checkbox,select-multiple' );
+    var checkable       = hash( 'checkbox,radio' );
+
+
+
+    // string to hash
+    function hash( str, glue ) {
+	var obj = {};
+	var tmp = str.split(glue||',');
+
+	while( tmp.length ) {
+	    obj[ tmp.pop() ] = true;
+	}
+
+	return obj;
+    }
+
+
+    // walk the elements and apply a callback method to them
+    function walkElements( callback ) {
+	var obj = [];
+	for( var i=0,element=null; element=formElements[i++]; ) {
+	    // skip the element if it has no name or is of a type with no useful value
+	    var type = element.type.toLowerCase();
+	    var name = element.name||'';
+	    if( skip[type]===true || name=='') continue;
+
+	    var tmp = callback( element, name, type );
+	    if( tmp!=null ) {
+		obj.push( tmp );
+	    }
+	}
+	return obj;
+    }
+
+
+    // listener for element changes
+    function changedElement( e ) {
+	var element = e.currentTarget||e;
+	var type    = element.type.toLowerCase();
+	var name    = element.name||'';
+
+	if (multipleValues[type] === true) {
+	    value = walkElements (function(e, n, t) {
+		if( n==name && e.options ) {
+		    var tmp = [];
+		    for( var j=0,option=null; option=e.options[j++]; ) {
+			if( option.selected ) {
+			    tmp.push( option.value );
+			}
+		    }
+		    return tmp.join( glue );
+		}
+		else if( n==name && checkable[t]===true && e.checked ) {
+		    return e.value;
+		}
+	    }).join( glue );
+	} else {
+	    value = element.value;
+	}
+
+	// set value
+	storage.setItem( name, value );
+    }
+
+
+
+    // set the textContent of an element
+    function setText(id, txt) {
+	var e = document.getElementById(id);
+	if (e) {
+	    e.textContent = txt;
+	}
+    }
+
+    // walk and set the elements accordingly to the storage
+    walkElements(function( element, name, type ) {
+	var value       = storage[name]!==undefined?storage.getItem( name ):"undefined";
+	//var value       = storage[name]!==undefined?storage.getItem( name ):element.value;
+	var valueHash   = hash( value, glue );
+
+	if( element.selectedOptions ) {
+	    // 'select' element
+	    for( var j=0,option=null; option=element.options[j++]; ) {
+		option.selected = valueHash[option.value]===true;
+	    }
+	} else if( checkable[type]===true ) {
+	    // 'checkable' element
+	    //alert(element.value + "  " + valueHash[element.value]);
+	    element.checked = valueHash[element.value]===true;
+	}
+	else {
+	    // any other kind of element
+	    element.value = value;
+	}
+
+
+	// set the widget.preferences to the value of the element if it was undefined
+	// YOU MAY NOT WANT TO DO THIS
+	//if( storage[name]==undefined ) {
+	//    changedElement( element );
+	//}
+
+	// listen to changes
+	element.addEventListener( 'change', changedElement, true );
+    });
+
+},
+false
+);
+
+
+</script>
+</body>
+</html>

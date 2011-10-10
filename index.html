@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>
+var theButton;
+var ToolbarUIItemProperties = {
+    title: "I'm a little dwarf that counts words",
+    icon: "letter.png",
+    badge: {
+	display: 'block',
+	backgroundColor: '#5566ff',
+	color: '#ffffff',
+	textContent: '',
+    },
+    popup: {
+	href: "popup.html",
+	width: 250,
+	height: 40,
+    }
+}
+
+theButton = opera.contexts.toolbar.createItem(ToolbarUIItemProperties);
+
+var words = 0, letters = 0;
+
+var addIcon = function() {
+    opera.contexts.toolbar.addItem(theButton);
+}
+
+var removeIcon = function() {
+    opera.contexts.toolbar.removeItem(theButton);
+
+}
+
+if (widget.preferences.showIcon === 'true') addIcon();
+
+var words;
+var letters;
+
+// fired when message from injected script comes
+opera.extension.onmessage = function(event) {
+    var message = event.data; 
+    var result;
+    if (message.to === "background") {
+	if (message.action === "countResults") {
+	    letters = message.data.letters;
+	    words = message.data.words;
+
+	    if (widget.preferences.countType === 'letters') {
+		theButton.badge.textContent = message.data.letters;
+	    } else {
+		theButton.badge.textContent = message.data.words;
+	    }
+	}
+    }
+}
+
+var callBarStyle = function() {
+    opera.extension.broadcastMessage({
+	to: "injectedScript",
+	action: "callBarStyle"
+    });
+}
+
+var callTooltipStyle = function() {
+    opera.extension.broadcastMessage({
+	to: "injectedScript",
+	action: "callTooltipStyle"
+    });
+}
+
+</script>
+</head>
+<body>
+</body>
+</html>
