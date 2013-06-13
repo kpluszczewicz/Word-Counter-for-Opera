@@ -21,28 +21,28 @@ var kpluszcz_Wc = function() {
     var INFO_NONE = "none";
 
     var baseHintStyle = {
-	background : "#f6ffb9",
-	borderBottom: "",
-	borderLeft: "",
-	borderRight: "",
-	borderTop: "",
-	bottom: "",
-	display : "hidden",
-	fontSize: "12px",
-	OTransitionDuration : "0.5s",
-	OTransitionProperty : "opacity",
-	OTransitionTimingFunction : "ease",
-	padding : "3px",
-	position : "fixed",
-	zIndex : "9999",
+        background : "#f6ffb9",
+        borderBottom: "",
+        borderLeft: "",
+        borderRight: "",
+        borderTop: "",
+        bottom: "",
+        display : "hidden",
+        fontSize: "12px",
+        OTransitionDuration : "0.5s",
+        OTransitionProperty : "opacity",
+        OTransitionTimingFunction : "ease",
+        padding : "3px",
+        position : "fixed",
+        zIndex : "9999",
         left: "",
         right: "",
         top: ""
     };
 
     var tooltipStyle = {
-	borderRadius : "3px",
-	border: "1px solid #63674a"
+        borderRadius : "3px",
+        border: "1px solid #63674a"
     };
 
     var barStyle = {
@@ -57,30 +57,30 @@ var kpluszcz_Wc = function() {
     };
 
     var displayWords = function(event) {
-	var sel = document.getSelection();
-	var count;
+        var sel = document.getSelection().toString();
+        var count;
 
-	if (sel !== "") {
-	    if (displayIndex == 10 || sel != selection) {
-		if (wordBox.style.display == "hidden") {
-		    wordBox.style.display = "block";
-		}
-		count = countWords(sel);
+        if (sel !== "") {
+            if (displayIndex == 10 || sel != selection) {
+                if (wordBox.style.display == "hidden") {
+                    wordBox.style.display = "block";
+                }
+                count = countWords(sel);
                 opera.extension.postMessage({
-		    to: "background",
-		    from: "injected",
-		    action: "countResults",
-		    data: count
-		});
+                    to: "background",
+                    from: "injected",
+                    action: "countResults",
+                    data: count
+                });
 
-		// fill hint box
-		wordBox.innerHTML = count.words + " words, " + count.letters + " letters";
-		selection = sel;
+                // fill hint box
+                wordBox.innerHTML = count.words + " words, " + count.letters + " letters";
+                selection = sel;
 
-		displayIndex = 0;
-	    } else {
-		displayIndex++;
-	    }
+                displayIndex = 0;
+            } else {
+                displayIndex++;
+            }
 
             if (widget.preferences.indicationForm === INFO_TIP) {
                 if (event.clientY + 30 + wordBox.clientHeight > window.innerHeight) {
@@ -98,41 +98,41 @@ var kpluszcz_Wc = function() {
                 wordBox.style.top = 0 + "px";
                 wordBox.style.right = 0 + "px";
             }
-	}
+        }
 
     };
 
     var countWords = function(str) {
-	var clarifiedStr = str.replace(/\n/g, " ");
-	var lettersCount = clarifiedStr.replace(/ /g, "").length;
-	var arrayOfWords = clarifiedStr.split(" ");
+        var clarifiedStr = str.replace(/\n/g, " ");
+        var lettersCount = clarifiedStr.replace(/ /g, "").length;
+        var arrayOfWords = clarifiedStr.split(" ");
 
-	// clean array from empty strings
-	var i=0;
-	while(i < arrayOfWords.length) {
-	    if (arrayOfWords[i] === '') {
-		arrayOfWords.splice(i, 1);
-	    } else {
-		// if not empty element, go on searching
-		i += 1;
-	    }
-	}
+        // clean array from empty strings
+        var i=0;
+        while(i < arrayOfWords.length) {
+            if (arrayOfWords[i] === '') {
+                arrayOfWords.splice(i, 1);
+            } else {
+                // if not empty element, go on searching
+                i += 1;
+            }
+        }
 
-	return { words: arrayOfWords.length, letters: lettersCount };
+        return { words: arrayOfWords.length, letters: lettersCount };
     };
 
     var loadStyle = function(style) {
-	var option;
-	for(option in style) {
-	    if(style.hasOwnProperty(option)) {
-		wordBox.style[option] = style[option];
-	    }
-	}
+        var option;
+        for(option in style) {
+            if(style.hasOwnProperty(option)) {
+                wordBox.style[option] = style[option];
+            }
+        }
 
     };
 
     var loadBaseStyle = function() {
-	loadStyle(baseHintStyle);
+        loadStyle(baseHintStyle);
     };
 
     //public
@@ -141,40 +141,40 @@ var kpluszcz_Wc = function() {
 
     that.loadBarStyle = function() {
         loadBaseStyle();
-	loadStyle(barStyle);
+        loadStyle(barStyle);
     };
 
     that.loadTooltipStyle = function() {
-	loadBaseStyle();
-	loadStyle(tooltipStyle);
+        loadBaseStyle();
+        loadStyle(tooltipStyle);
     };
 
     that.mouseDownHandler = function(event) {
-	document.addEventListener("mouseMove", displayWords, false);
-	if (widget.preferences.indicationForm !== INFO_NONE) {
+        document.addEventListener("mouseMove", displayWords, false);
+        if (widget.preferences.indicationForm !== INFO_NONE) {
             wordBox.style.opacity = 1;
         }
     };
 
     that.clearDisplaying = function(event) {
-	document.removeEventListener("mouseMove", displayWords, false);
+        document.removeEventListener("mouseMove", displayWords, false);
         if (widget.preferences.indicationForm !== INFO_NONE) {
             wordBox.style.opacity = 0;
         }
     };
 
     that.mouseUpHandler = function(event) {
-	var selectedText = window.getSelection().toString();
+        var selectedText = window.getSelection().toString();
 
-	// jest zaznaczenie 
-	if (selectedText !== '') {
-	    opera.extension.postMessage({
-		to: "background",
-		from: "injected",
-		action: "countResults",
-		data: countWords(selectedText)
-	    });
-	}
+        // jest zaznaczenie 
+        if (selectedText !== '') {
+            opera.extension.postMessage({
+                to: "background",
+                from: "injected",
+                action: "countResults",
+                data: countWords(selectedText)
+            });
+        }
     };
 
     that.init = function(event) {
@@ -182,9 +182,9 @@ var kpluszcz_Wc = function() {
         var infoForm = widget.preferences.indicationForm;
         var option;
 
-	wordBox = document.createElement("div");
-	// :)
-	wordBox.id = "dupa";
+        wordBox = document.createElement("div");
+        // :)
+        wordBox.id = "dupa";
 
         if (typeof wordBox.style === "undefined") {
             window.setTimeout(that.init, 500);
@@ -215,13 +215,13 @@ window.addEventListener("DOMContentLoaded", function(event) {
 }, false);
 
 opera.extension.onmessage = function(event) {
-	var message = event.data;
+    var message = event.data;
 
-	if (message.to === "injectedScript") {
-	    if( message.action === 'callBarStyle') {
-		kpluszcz_wc.loadBarStyle();
-	    } else if (message.action === 'callTooltipStyle') {
-		kpluszcz_wc.loadTooltipStyle();
-	    }
-	}
+    if (message.to === "injectedScript") {
+        if( message.action === 'callBarStyle') {
+            kpluszcz_wc.loadBarStyle();
+        } else if (message.action === 'callTooltipStyle') {
+            kpluszcz_wc.loadTooltipStyle();
+        }
+    }
 };
